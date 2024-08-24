@@ -3,96 +3,95 @@ const assert = chai.assert;
 
 const Solver = require('../controllers/sudoku-solver.js');
 let solver = new Solver();
+const testPuzzles = require('../controllers/puzzle-strings.js').puzzlesAndSolutions;
 
-suite('Unit Tests', () => {
-  
-  // Test 1: Logic handles a valid puzzle string of 81 characters
-  test('Logic handles a valid puzzle string of 81 characters', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const validation = solver.validate(puzzleString);
-    assert.deepEqual(validation, { valid: true });
+suite('UnitTests', () => {
+  suite('checkRowPlacement tests', function () {
+    test('true tests', function () {
+      assert.isTrue(solver.checkRowPlacement(testPuzzles[0][0], "D", 4, 8), "Upper case row index failed");
+      assert.isTrue(solver.checkRowPlacement(testPuzzles[0][0], "f", 9, 4), "Lower case row index failed");
+    });
+    test('false tests', function () {
+      assert.isFalse(solver.checkRowPlacement(testPuzzles[0][0], "D", 2, 1));
+    });
+  });
+  suite('checkColPlacement tests', function () {
+    test('true tests', function () {
+      assert.isTrue(solver.checkColPlacement(testPuzzles[1][0], "G", 3, 1));
+      assert.isTrue(solver.checkColPlacement(testPuzzles[1][0], "E", 6, 2));
+    });
+    test('false tests', function () {
+      assert.isFalse(solver.checkColPlacement(testPuzzles[1][0], "b", 4, 7));
+      assert.isFalse(solver.checkColPlacement(testPuzzles[1][0], "C", 6, 1));
+    });
+  });
+  suite('checkRegionPlacement tests', function () {
+    test('true tests', function () {
+      assert.isTrue(solver.checkRegionPlacement(testPuzzles[2][0], "C", 6, 2));
+      assert.isTrue(solver.checkRegionPlacement(testPuzzles[2][0], "i", 8, 9));
+    });
+    test('false tests', function () {
+      assert.isFalse(solver.checkRegionPlacement(testPuzzles[2][0], "c", 9, 6));
+      assert.isFalse(solver.checkRegionPlacement(testPuzzles[2][0], "g", 6, 3));
+    });
+  });
+  suite('findAllCellOptions tests', function () {
+    test("Finds inputs that don't violate sudoku rules", function () {
+      assert.deepEqual(solver.findAllCellOptions(testPuzzles[3][0], "A", 1), ['3','4'])
+    })
+  });
+  suite('checkDuplicateValue tests', function () {
+    test('true tests', function () {
+      assert.isTrue(solver.checkDuplicateValue(testPuzzles[3][0], "g", 6, 2))
+    })
+    test('false tests', function () {
+      assert.isFalse(solver.checkDuplicateValue(testPuzzles[3][0], "g", 6, 4))
+      assert.isFalse(solver.checkDuplicateValue(testPuzzles[3][0], "f", 6, 4))
+    })
+  });
+  suite('valadate tests', function () {
+    test('passing test', function () {
+      assert.isTrue(solver.validate([...testPuzzles[3][0]]))
+    })
+    test('failing test', function () {
+      assert.isFalse(solver.validate([...testPuzzles[5][0]]))
+    })
   });
 
-  // Test 2: Logic handles a puzzle string with invalid characters (not 1-9 or .)
-  test('Logic handles a puzzle string with invalid characters', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...X';
-    const validation = solver.validate(puzzleString);
-    assert.notEqual(validation, "Valid");
-    assert.equal(validation, 'Invalid characters in puzzle');
-  });
+  suite('solve tests', function () {
+    test('solution 0 tests', function () {
+      let test = [...testPuzzles[0][0]]
+      assert.isTrue(solver.solve(test))
+      assert.equal(test.join(""), testPuzzles[0][1])
+    })
 
-  // Test 3: Logic handles a puzzle string that is not 81 characters in length
-  test('Logic handles a puzzle string that is not 81 characters in length', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2..';
-    const validation = solver.validate(puzzleString);
-    assert.notEqual(validation, "Valid");
-    assert.equal(validation, 'Expected puzzle to be 81 characters long');
-  });
+    test('solution 1 tests', function () {
+      let test = [...testPuzzles[1][0]]
+      assert.isTrue(solver.solve(test))
+      assert.equal(test.join(""), testPuzzles[1][1])
+    })
 
-  // Test 4: Logic handles a valid row placement
-  test('Logic handles a valid row placement', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const isValid = solver.checkRowPlacement(puzzleString, 0, 1, '3');
-    assert.isTrue(isValid);
-  });
+    test('solution 2 tests', function () {
+      let test = [...testPuzzles[2][0]]
+      assert.isTrue(solver.solve(test))
+      assert.equal(test.join(""), testPuzzles[2][1])
+    })
 
-  // Test 5: Logic handles an invalid row placement
-  test('Logic handles an invalid row placement', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const isValid = solver.checkRowPlacement(puzzleString, 0, 1, '5');
-    assert.isFalse(isValid);
-  });
+    test('solution 3 tests', function () {
+      let test = [...testPuzzles[3][0]]
+      assert.isTrue(solver.solve(test))
+      assert.equal(test.join(""), testPuzzles[3][1])
+    })
 
-  // Test 6: Logic handles a valid column placement
-  test('Logic handles a valid column placement', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const isValid = solver.checkColPlacement(puzzleString, 0, 1, '3');
-    assert.isTrue(isValid);
-  });
+    test('solution 4 tests', function () {
+      let test = [...testPuzzles[4][0]]
+      assert.isTrue(solver.solve(test))
+      assert.equal(test.join(""), testPuzzles[4][1])
+    })
 
-  // Test 7: Logic handles an invalid column placement
-  test('Logic handles an invalid column placement', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const isValid = solver.checkColPlacement(puzzleString, 0, 1, '6');
-    assert.isFalse(isValid);
+    test('no solution tests', function () {
+      let test = [...testPuzzles[5][0]]
+      assert.isFalse(solver.solve(test))
+    })
   });
-
-  // Test 8: Logic handles a valid region (3x3 grid) placement
-  test('Logic handles a valid region placement', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const isValid = solver.checkRegionPlacement(puzzleString, 0, 1, '3');
-    assert.isTrue(isValid);
-  });
-
-  // Test 9: Logic handles an invalid region (3x3 grid) placement
-  test('Logic handles an invalid region placement', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const isValid = solver.checkRegionPlacement(puzzleString, 0, 1, '2');
-    assert.isFalse(isValid);
-  });
-
-  // Test 10: Valid puzzle strings pass the solver
-  test('Valid puzzle strings pass the solver', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const solution = solver.solveSudoku(puzzleString);
-    assert.isArray(solution);
-    assert.lengthOf(solution, 81);
-  });
-
-  // Test 11: Invalid puzzle strings fail the solver
-  test('Invalid puzzle strings fail the solver', () => {
-    const puzzleString = '115..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const solution = solver.solveSudoku(puzzleString);
-    assert.isObject(solution);
-    assert.equal(solution.error, 'Puzzle cannot be solved');
-  });
-
-  // Test 12: Solver returns the expected solution for an incomplete puzzle
-  test('Solver returns the expected solution for an incomplete puzzle', () => {
-    const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const expectedSolution = '135792684946381257728564139693148725812975346574236891287659413351427968469813572';
-    const solution = solver.solveSudoku(puzzleString);
-    assert.equal(solution.join(''), expectedSolution);
-  });
-
 });
