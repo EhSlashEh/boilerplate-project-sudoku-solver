@@ -3,21 +3,48 @@ class SudokuSolver {
     if (!puzzleString) {
       return "Required field missing";
     }
-    if (/[^1-9.]/.test(puzzleString)) {
-      return { valid: false, error: 'Invalid characters in puzzle' };
-    }
-
     if (puzzleString.length !== 81) {
-      return { valid: false, error: 'Expected puzzle to be 81 characters long' };
+      return 'Expected puzzle to be 81 characters long';
     }
+    if (/[^1-9.]/g.test(puzzleString)) {
+      return 'Invalid characters in puzzle';
+    }
+    return "Valid";
+  }
 
-    return { valid: true };
+  letterToNumber(row) {
+    switch (row.toUpperCase()) {
+      case "A":
+        return 1;
+      case "B":
+        return 2;
+      case "C":
+        return 3;
+      case "D":
+        return 4;
+      case "E":
+        return 5;
+      case "F":
+        return 6;
+      case "G":
+        return 7;
+      case "H":
+        return 8;
+      case "I":
+        return 9;
+      default:
+        return "none";
+    }
   }
 
   checkRowPlacement(puzzleString, row, column, value) {
     const board = this.sudokuStringToArray(puzzleString);
-    for (let col = 0; col < 9; col++) {
-      if (board[row][col] === parseInt(value)) {
+    row = thise.letterToNumber(row);
+    if (grid[row -1][column - 1] !== 0) {
+      return false;
+    }
+    for (let i = 0; i < 9; i++) {
+      if (board[row - 1][i] == value) {
         return false;
       }
     }
@@ -26,8 +53,12 @@ class SudokuSolver {
 
   checkColPlacement(puzzleString, row, column, value) {
     const board = this.sudokuStringToArray(puzzleString);
-    for (let r = 0; r < 9; r++) {
-      if (board[r][column] === parseInt(value)) {
+    row = this.letterToNumber(row);
+    if (grid[row -1][column - 1] !== 0) {
+      return false;
+    }
+    for (let i = 0; i < 9; i++) {
+      if (board[i][column - 1] === value) {
         return false;
       }
     }
@@ -36,16 +67,16 @@ class SudokuSolver {
 
   checkRegionPlacement(puzzleString, row, column, value) {
     const board = this.sudokuStringToArray(puzzleString);
-    const regionRowStart = Math.floor(row / 3) * 3;
-    const regionColStart = Math.floor(column / 3) * 3;
-
-    for (let r = regionRowStart; r < regionRowStart + 3; r++) {
-      for (let c = regionColStart; c < regionColStart + 3; c++) {
-        if (board[r][c] === parseInt(value)) {
-          return false;
-        }
-      }
+    row = this.letterToNumber(row);
+    if (grid[row - 1][col - 1] !== 0) {
+      return false;
     }
+
+    let startRow = row - (row % 3);
+    let startCol = col - (col % 3);
+    for (let i = 0; i <3; i++)
+      for (let j; j < 3; j++)
+        if (board[i + startRow][j + startCol] == value) return false;
     return true;
   }
 
