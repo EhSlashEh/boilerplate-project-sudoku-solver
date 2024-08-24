@@ -72,13 +72,14 @@ class SudokuSolver {
 
   solve(puzzleString) {
     const board = this.sudokuStringToArray(puzzleString);
-
+  
     const isValid = (board, row, col, num) => {
-      return this.checkRowPlacement(board, row, col, num) &&
-             this.checkColPlacement(board, row, col, num) &&
-             this.checkRegionPlacement(board, row, col, num);
+      const newPuzzleString = board.flat().join('');
+      return this.checkRowPlacement(newPuzzleString, row, col, num) &&
+             this.checkColPlacement(newPuzzleString, row, col, num) &&
+             this.checkRegionPlacement(newPuzzleString, row, col, num);
     };
-
+  
     const backtrack = (board) => {
       for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
@@ -98,14 +99,15 @@ class SudokuSolver {
       }
       return true;
     };
-
+  
     const solved = backtrack(board);
     if (solved) {
       return board.flat().join('');
     } else {
-      return 'Puzzle cannot be solved';
+      return { error: 'Puzzle cannot be solved' };
     }
   }
+  
 }
 
 module.exports = SudokuSolver;
