@@ -10,23 +10,23 @@ suite('Unit Tests', () => {
   test('Logic handles a valid puzzle string of 81 characters', () => {
     const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
     const validation = solver.validate(puzzleString);
-    assert.isTrue(validation.valid);
+    assert.deepEqual(validation, { valid: true });
   });
 
   // Test 2: Logic handles a puzzle string with invalid characters (not 1-9 or .)
   test('Logic handles a puzzle string with invalid characters', () => {
     const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...X';
     const validation = solver.validate(puzzleString);
-    assert.isFalse(validation.valid);
-    assert.equal(validation.error, 'Invalid characters in puzzle');
+    assert.notEqual(validation, "Valid");
+    assert.equal(validation, 'Invalid characters in puzzle');
   });
 
   // Test 3: Logic handles a puzzle string that is not 81 characters in length
   test('Logic handles a puzzle string that is not 81 characters in length', () => {
     const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2..';
     const validation = solver.validate(puzzleString);
-    assert.isFalse(validation.valid);
-    assert.equal(validation.error, 'Expected puzzle to be 81 characters long');
+    assert.notEqual(validation, "Valid");
+    assert.equal(validation, 'Expected puzzle to be 81 characters long');
   });
 
   // Test 4: Logic handles a valid row placement
@@ -74,15 +74,15 @@ suite('Unit Tests', () => {
   // Test 10: Valid puzzle strings pass the solver
   test('Valid puzzle strings pass the solver', () => {
     const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const solution = solver.solve(puzzleString);
-    assert.isString(solution);
+    const solution = solver.solveSudoku(puzzleString);
+    assert.isArray(solution);
     assert.lengthOf(solution, 81);
   });
 
   // Test 11: Invalid puzzle strings fail the solver
   test('Invalid puzzle strings fail the solver', () => {
     const puzzleString = '115..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
-    const solution = solver.solve(puzzleString);
+    const solution = solver.solveSudoku(puzzleString);
     assert.isObject(solution);
     assert.equal(solution.error, 'Puzzle cannot be solved');
   });
@@ -91,8 +91,8 @@ suite('Unit Tests', () => {
   test('Solver returns the expected solution for an incomplete puzzle', () => {
     const puzzleString = '1.5..2.84..63.12.7.2..5.....9..1....8.2....6.7...7...8.8..5.....1.45....8.3..2...9';
     const expectedSolution = '135792684946381257728564139693148725812975346574236891287659413351427968469813572';
-    const solution = solver.solve(puzzleString);
-    assert.equal(solution, expectedSolution);
+    const solution = solver.solveSudoku(puzzleString);
+    assert.equal(solution.join(''), expectedSolution);
   });
 
 });
