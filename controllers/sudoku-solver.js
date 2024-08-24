@@ -1,13 +1,14 @@
 class SudokuSolver {
   validate(puzzleString) {
-    // Check if puzzleString length is 81 characters
-    if (puzzleString.length !== 81) {
-      return { valid: false, error: 'Expected puzzle to be 81 characters long' };
+    if (!puzzleString) {
+      return "Required field missing";
     }
-
-    // Check if puzzleString contains only digits 1-9 and periods
     if (/[^1-9.]/.test(puzzleString)) {
       return { valid: false, error: 'Invalid characters in puzzle' };
+    }
+
+    if (puzzleString.length !== 81) {
+      return { valid: false, error: 'Expected puzzle to be 81 characters long' };
     }
 
     return { valid: true };
