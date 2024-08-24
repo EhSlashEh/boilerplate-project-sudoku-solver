@@ -107,7 +107,6 @@ class SudokuSolver {
       return { error: 'Puzzle cannot be solved' };
     }
   }
-  
 }
 
 module.exports = SudokuSolver;
